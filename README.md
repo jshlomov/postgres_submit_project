@@ -12,7 +12,7 @@ This project is a Flask web application that interacts with a database containin
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/ww2-database-project.git
+git clone https://github.com/jshlomov/postgres_submit_project.git
 source venv/bin/activate
 pip install -r requirements.txt
 ```
