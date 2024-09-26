@@ -1,3 +1,5 @@
+from typing import List
+
 from returns.maybe import Maybe, Nothing
 from returns.result import Result, Success, Failure
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,6 +18,13 @@ def insert_target(target: Target) -> Result[Target, str]:
         except SQLAlchemyError as e:
             session.rollback()
             return Failure(str(e))
+
+def find_all_targets() -> List[Target]:
+    with session_factory() as session:
+        try:
+            return session.query(Target).all()
+        except SQLAlchemyError as e:
+            return []
 
 def find_target_by_id(target_id: int) -> Maybe[Target]:
     with session_factory() as session:
