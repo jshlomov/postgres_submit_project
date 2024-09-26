@@ -1,0 +1,47 @@
+
+
+ניתן לראות את כל הנתונים בקבצים המצורפים
+
+שאילתה 1
+
+EXPLAIN ANALYZE SELECT DISTINCT ON (target_city) target_city, air_force, c
+FROM (
+    SELECT target_city, air_force, COUNT(air_force) AS c
+    FROM mission
+    WHERE EXTRACT(YEAR FROM mission_date) = 1942
+    GROUP BY target_city, air_force
+) AS subquery
+ORDER BY target_city, c DESC;
+
+זמן ריצה לפני האינדקס: 134.959 ms
+
+אינדקס מוצע: CREATE INDEX index_mission_date ON mission (EXTRACT(YEAR FROM mission_date))
+
+זמן ריצה לאחר מימוש האינדקס: 7.256 ms
+
+הסבר: השאילתה הראשונה מחפשת עבור שנה מסוימת (1942) על ידי
+שימוש בפונקציה EXTRACT כדי לשלוף את השנה מתוך תאריך המשימה.
+אינדקסים על שדות אחרים בטבלה
+( target_city או air_force) לא היו יעילים ,
+ מכיוון שהחיפוש עצמו הוא על חילוץ השנה מהתאריך ולא שאר העמודות.
+
+ שאילתה 2
+
+EXPLAIN ANALYZE SELECT bomb_damage_assessment, count(target_country)
+FROM mission
+WHERE bomb_damage_assessment IS NOT NULL
+AND airborne_aircraft > 5
+GROUP BY target_country, bomb_damage_assessment
+ORDER BY count(bomb_damage_assessment) DESC LIMIT 1;
+
+זמן ריצה לפני האינדקס: 133.648 ms
+
+CREATE INDEX index_bomb_damage_assessment ON mission (bomb_damage_assessment)
+
+זמן ריצה לאחר מימוש האינדקס: 0.195 ms
+
+הסבר: bomb_damage_assessment הוא המסנן בפונקציה הזאת וממילא כדי להעלות
+את היעילות של החיפוש האינקס נעשה עליו. עמודות אחרות לא יועילו מכיון שאין חיפוש עליהם
+ולא עוברים על כל הנתונים שלהם.
+
+
