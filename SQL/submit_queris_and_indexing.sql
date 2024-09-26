@@ -9,8 +9,8 @@ FROM (
 ) AS subquery
 ORDER BY target_city, c DESC;
 
-CREATE INDEX index_bomb_damage_assessment ON mission (bomb_damage_assessment)
-DROP INDEX IF EXISTS index_bomb_damage_assessment;
+CREATE INDEX index_mission_date ON mission (EXTRACT(YEAR FROM mission_date))
+DROP INDEX IF EXISTS index_mission_date;
 
 
 explain analyze select bomb_damage_assessment, count(target_country) from mission
